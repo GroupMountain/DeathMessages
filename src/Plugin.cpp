@@ -7,10 +7,13 @@ namespace plugin {
 
 Plugin::Plugin(ll::plugin::NativePlugin& self) : mSelf(self) {
     // Code for loading the plugin goes here.
+    initPlugin();
 }
 
 bool Plugin::enable() {
     // Code for enabling the plugin goes here.
+    RegisterDamageDefinition();
+    ListenEvents();
     return true;
 }
 
