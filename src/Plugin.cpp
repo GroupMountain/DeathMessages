@@ -12,8 +12,21 @@ Plugin::Plugin(ll::plugin::NativePlugin& self) : mSelf(self) {
 
 bool Plugin::enable() {
     // Code for enabling the plugin goes here.
-    RegisterDamageDefinition();
-    ListenEvents();
+    auto requireLibVersion = SemVersion(0, 8, 2, "", "");
+    if (GMLIB::Version::checkLibVersionMatch(requireLibVersion)) {
+        RegisterDamageDefinition();
+        ListenEvents();
+        logger.info("DeathMessages Loaded!");
+        logger.info("Author: GroupMountain");
+        logger.info("Repository: https://github.com/GroupMountain/DeathMessages");
+    } else {
+        logger.error("GMLIB Version is outdated! Please update your GMLIB!");
+        logger.error(
+            "Current GMLIB Version {}, Required Lowest GMLIB Version {}",
+            GMLIB::Version::getLibVersionString(),
+            requireLibVersion.asString()
+        );
+    }
     return true;
 }
 
