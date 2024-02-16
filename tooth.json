@@ -1,0 +1,26 @@
+{
+    "format_version": 2,
+    "tooth": "github.com/GroupMountain/DeathMessages",
+    "version": "0.8.0",
+    "info": {
+        "name": "DeathMessages",
+        "description": "Better Death Messages on MCBE",
+        "author": "GroupMountain",
+        "tags": [
+            "LeviLamina",
+            "DeathMessages"
+        ]
+    },
+    "asset_url": "https://github.com/GroupMountain/DeathMessages/releases/download/v0.8.0/DeathMessages-windows-x64.zip",
+    "dependencies": {
+        "github.com/GroupMountain/GMLIB": ">=0.8.2"
+    },
+    "files": {
+        "place": [
+            {
+                "src": "DeathMessages/*",
+                "dest": "plugins/DeathMessages"
+            }
+        ]
+    }
+}
