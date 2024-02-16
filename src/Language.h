@@ -239,6 +239,8 @@ entity.warden.name=Warden
 entity.allay.name=Allay
 entity.camel.name=Camel
 entity.chest_raft.name=Raft with Chest
+multiplayer.player.joined=%s joined the game
+multiplayer.player.left=%s left the game
 )";
 
 std::string zh_CN = R"(
