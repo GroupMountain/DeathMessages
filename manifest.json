@@ -2,6 +2,9 @@
     "name": "${pluginName}",
     "entry": "${pluginFile}",
     "type": "native",
+    "version": "0.9.0",
+    "author": "GroupMountain",
+    "description": "Better Death Messages",
     "dependencies": [
         {
             "name": "GMLIB"

@@ -45,7 +45,7 @@ void ListenEvents() {
                 auto msg  = ev.getDeathMessage();
                 auto info = tr(msg.first, msg.second);
                 deathLogger.info(info);
-                ev.setDeathMessage({info, msg.second});
+                ev.getDeathMessage() = {info, msg.second};
             }
         );
     }
