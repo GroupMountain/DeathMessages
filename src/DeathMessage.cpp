@@ -4,6 +4,7 @@ void RegisterDamageDefinition() {
     GMLIB::Mod::DamageCause::setCustomDamageCauseEnabled();
     GMLIB::Mod::DamageCause::setVanillaCauseMessage(ActorDamageCause::Anvil, "anvil");
     GMLIB::Mod::DamageCause::setVanillaCauseMessage(ActorDamageCause::EntityAttack, "mob");
+    GMLIB::Mod::DamageCause::setVanillaCauseMessage(ActorDamageCause::RamAttack, "mob");
     GMLIB::Mod::DamageCause::setVanillaCauseMessage(ActorDamageCause::Drowning, "drown");
     GMLIB::Mod::DamageCause::setVanillaCauseMessage(ActorDamageCause::FallingBlock, "fallingBlock");
     GMLIB::Mod::DamageCause::setVanillaCauseMessage(ActorDamageCause::Fire, "inFire");
@@ -24,6 +25,79 @@ void RegisterDamageDefinition() {
     GMLIB::Mod::DamageCause::setVanillaCauseMessage(ActorDamageCause::Void, "outOfWorld");
     GMLIB::Mod::DamageCause::setVanillaCauseMessage(ActorDamageCause::SelfDestruct, "genericKill");
     GMLIB::Mod::DamageCause::setVanillaCauseMessage(ActorDamageCause::Projectile, "thrown");
+    GMLIB::Mod::DamageCause::setVanillaCauseMessage(ActorDamageCause::Thorns, "thorns");
+    GMLIB::Mod::DamageCause::registerCustomDeathMessage(
+        ActorDamageCause::Projectile,
+        "death.attack.fireball.item",
+        "minecraft:small_fireball"
+    );
+    GMLIB::Mod::DamageCause::registerCustomDeathMessage(
+        ActorDamageCause::Projectile,
+        "death.attack.trident.item",
+        "minecraft:thrown_trident"
+    );
+    GMLIB::Mod::DamageCause::registerCustomDeathMessage(
+        ActorDamageCause::Projectile,
+        "death.attack.spit",
+        "minecraft:llama_spit"
+    );
+    GMLIB::Mod::DamageCause::registerCustomDeathMessage(
+        ActorDamageCause::Projectile,
+        "death.attack.bullet",
+        "minecraft:shulker_bullet"
+    );
+    GMLIB::Mod::DamageCause::registerCustomDeathMessage(
+        ActorDamageCause::Projectile,
+        "death.attack.arrow.item",
+        "minecraft:arrow"
+    );
+    GMLIB::Mod::DamageCause::registerCustomDeathMessage(
+        ActorDamageCause::Projectile,
+        "death.attack.explosion.player",
+        "minecraft:fireball"
+    );
+    GMLIB::Mod::DamageCause::registerCustomDeathMessage(
+        ActorDamageCause::Projectile,
+        "death.attack.mob",
+        "minecraft:breeze_wind_charge_projectile"
+    );
+    GMLIB::Mod::DamageCause::registerCustomDeathMessage(ActorDamageCause::Magic, "death.attack.magic", "empty");
+    GMLIB::Mod::DamageCause::registerCustomDeathMessage(
+        ActorDamageCause::SonicBoom,
+        "death.attack.sonicBoom",
+        "minecraft:warden"
+    );
+    GMLIB::Mod::DamageCause::registerCustomDeathMessage(ActorDamageCause::Thorns, "death.attack.generic", "empty");
+    GMLIB::Mod::DamageCause::registerCustomDeathMessage(
+        ActorDamageCause::EntityExplosion,
+        "death.attack.explosion.player",
+        "all"
+    );
+    GMLIB::Mod::DamageCause::registerCustomDeathMessage(
+        ActorDamageCause::EntityExplosion,
+        "minecraft:wither_skull",
+        "death.attack.witherSkull.item"
+    );
+    GMLIB::Mod::DamageCause::registerCustomDeathMessage(
+        ActorDamageCause::EntityExplosion,
+        "minecraft:wither_skull_dangerous",
+        "death.attack.witherSkull.item"
+    );
+    GMLIB::Mod::DamageCause::registerCustomDeathMessage(
+        ActorDamageCause::EntityAttack,
+        "minecraft:player",
+        "death.attack.player.item"
+    );
+    GMLIB::Mod::DamageCause::registerCustomDeathMessage(
+        ActorDamageCause::EntityAttack,
+        "minecraft:bee",
+        "death.attack.sting.item"
+    );
+    GMLIB::Mod::DamageCause::registerCustomDeathMessage(
+        ActorDamageCause::RamAttack,
+        "minecraft:player",
+        "death.attack.player.item"
+    );
 }
 
 void ListenEvents() {

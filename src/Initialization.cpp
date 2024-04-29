@@ -5,9 +5,8 @@
 ll::Logger deathLogger("Death");
 ll::Logger infoLogger("Server");
 
-GMLIB::Files::JsonConfig*     Config                 = nullptr;
-GMLIB::Files::I18n::LangI18n* Language               = nullptr;
-int                           commandPermissionLevel = 4;
+GMLIB::Files::JsonConfig*     Config   = nullptr;
+GMLIB::Files::I18n::LangI18n* Language = nullptr;
 
 namespace ConfigData {
 bool mServerSideLang = false;
@@ -44,7 +43,7 @@ std::string tr(std::string key, std::vector<std::string> data) {
         }
         return Language->translate(key, data);
     }
-    return I18n::get(key, data);
+    return I18nAPI::get(key, data);
 }
 
 void initConfig() {
