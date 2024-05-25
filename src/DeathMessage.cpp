@@ -1,3 +1,4 @@
+#include "Entry.h"
 #include "Global.h"
 
 void RegisterDamageDefinition() {
@@ -101,19 +102,20 @@ void RegisterDamageDefinition() {
 }
 
 void ListenEvents() {
+    auto& config   = DeathMessages::Entry::getInstance()->getConfig();
     auto& eventBus = ll::event::EventBus::getInstance();
-    if (ConfigData::mJoinMessage) {
+    if (config.ConsoleLog.JoinMessage) {
         eventBus.emplaceListener<ll::event::player::PlayerConnectEvent>([](ll::event::player::PlayerConnectEvent& ev) {
             infoLogger.info(fmt::format(fg(fmt::color::yellow), tr("multiplayer.player.joined", {ev.self().getName()}))
             );
         });
     }
-    if (ConfigData::mLeftMessage) {
+    if (config.ConsoleLog.LeftMessage) {
         eventBus.emplaceListener<ll::event::player::PlayerLeaveEvent>([](ll::event::player::PlayerLeaveEvent& ev) {
             infoLogger.info(fmt::format(fg(fmt::color::yellow), tr("multiplayer.player.left", {ev.self().getName()})));
         });
     }
-    if (ConfigData::mDeathMessage) {
+    if (config.ConsoleLog.DeathMessage) {
         eventBus.emplaceListener<GMLIB::Event::EntityEvent::DeathMessageAfterEvent>(
             [](GMLIB::Event::EntityEvent::DeathMessageAfterEvent& ev) {
                 auto msg  = ev.getDeathMessage();

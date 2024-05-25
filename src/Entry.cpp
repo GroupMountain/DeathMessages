@@ -1,7 +1,10 @@
 #include "Entry.h"
 #include "Global.h"
+#include "Language.h"
 
 ll::Logger logger(PLUGIN_NAME);
+ll::Logger deathLogger("Death");
+ll::Logger infoLogger("Server");
 
 namespace DeathMessages {
 
@@ -11,7 +14,19 @@ std::unique_ptr<Entry>& Entry::getInstance() {
 }
 
 bool Entry::load() {
-    initPlugin();
+    mConfig.emplace();
+    if (!ll::config::loadConfig(*mConfig, getSelf().getConfigDir() / u8"config.json")) {
+        ll::config::saveConfig(*mConfig, getSelf().getConfigDir() / u8"config.json");
+    }
+    if (getConfig().ServerSideTranslation.Enabled) {
+        loadI18n();
+    } else {
+        loadResourcePack();
+    }
+    if (getConfig().FileLog.Enabled) {
+        auto& path = getConfig().FileLog.Path;
+        deathLogger.setFile(path);
+    }
     return true;
 }
 
@@ -23,6 +38,40 @@ bool Entry::enable() {
 
 bool Entry::disable() { return true; }
 
+bool Entry::unload() {
+    mConfig.reset();
+    mI18n.reset();
+    getInstance().reset();
+    return true;
+}
+
+Config& Entry::getConfig() { return mConfig.value(); }
+
+std::optional<LangI18n> Entry::getI18n() { return mI18n; }
+
+void Entry::loadI18n() {
+    mI18n.emplace(getSelf().getLangDir(), getConfig().ServerSideTranslation.Language);
+    mI18n->updateOrCreateLanguage("en_US", en_US);
+    mI18n->updateOrCreateLanguage("zh_CN", zh_CN);
+    mI18n->loadAllLanguages();
+}
+
+void Entry::loadResourcePack() {
+    GMLIB::Mod::VanillaFix::setFixI18nEnabled();
+    std::string resourcePath = "./plugins/DeathMessages/resource/";
+    auto        resource     = GMLIB::Files::ResourceLanguage::ResourceLanguage(resourcePath, PLUGIN_NAME, 0, 8, 0);
+    resource.addLanguage("en_US", en_US);
+    resource.addLanguage("zh_CN", zh_CN);
+    resource.initLanguage();
+}
+
 } // namespace DeathMessages
 
 LL_REGISTER_PLUGIN(DeathMessages::Entry, DeathMessages::Entry::getInstance());
+
+std::string tr(std::string const& key, std::vector<std::string> const& params) {
+    if (auto i18n = DeathMessages::Entry::getInstance()->getI18n()) {
+        return i18n->get(key, params);
+    }
+    return I18nAPI::get(key, params);
+}

@@ -1,7 +1,10 @@
 #pragma once
-#include <ll/api/plugin/NativePlugin.h>
+#include "Config.h"
+#include "Global.h"
 
 namespace DeathMessages {
+
+using namespace GMLIB::Files::I18n;
 
 class Entry {
 
@@ -21,13 +24,21 @@ public:
     /// @return True if the plugin is disabled successfully.
     bool disable();
 
-    // TODO: Implement this method if you need to unload the plugin.
-    // /// @return True if the plugin is unloaded successfully.
-    // bool unload();
+    /// @return True if the plugin is unloaded successfully.
+    bool unload();
+
+    Config& getConfig();
+
+    std::optional<LangI18n> getI18n();
+
+    void loadI18n();
+
+    void loadResourcePack();
 
 private:
     ll::plugin::NativePlugin& mSelf;
+    std::optional<Config>     mConfig;
+    std::optional<LangI18n>   mI18n;
 };
 
 } // namespace DeathMessages
-

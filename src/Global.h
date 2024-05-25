@@ -7,15 +7,8 @@ extern ll::Logger logger;
 extern ll::Logger deathLogger;
 extern ll::Logger infoLogger;
 
-namespace ConfigData {
-extern bool mServerSideLang;
-extern bool mJoinMessage;
-extern bool mLeftMessage;
-extern bool mDeathMessage;
-} // namespace ConfigData
+extern std::string tr(std::string const& key, std::vector<std::string> const& data = {});
 
-extern std::string tr(std::string key, std::vector<std::string> data = {});
-
-extern void initPlugin();
 extern void RegisterDamageDefinition();
 extern void ListenEvents();
+extern void initPlugin();
