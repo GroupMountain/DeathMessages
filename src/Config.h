@@ -17,6 +17,6 @@ struct Config {
 
     struct serverSideTranslation {
         bool        Enabled  = false;
-        std::string Language = "en_US";
+        std::string Language = "zh_CN";
     } ServerSideTranslation;
 };

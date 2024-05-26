@@ -54,6 +54,7 @@ void Entry::loadI18n() {
     mI18n->updateOrCreateLanguage("en_US", en_US);
     mI18n->updateOrCreateLanguage("zh_CN", zh_CN);
     mI18n->loadAllLanguages();
+    mI18n->setDefaultLanguage("zh_CN");
 }
 
 void Entry::loadResourcePack() {
