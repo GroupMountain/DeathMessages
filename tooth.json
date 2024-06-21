@@ -1,7 +1,7 @@
 {
     "format_version": 2,
     "tooth": "github.com/GroupMountain/DeathMessages",
-    "version": "0.12.1",
+    "version": "0.13.0",
     "info": {
         "name": "DeathMessages",
         "description": "Better Death Messages on MCBE",
@@ -11,9 +11,9 @@
             "DeathMessages"
         ]
     },
-    "asset_url": "https://github.com/GroupMountain/DeathMessages/releases/download/v0.12.1/DeathMessages-windows-x64.zip",
+    "asset_url": "https://github.com/GroupMountain/DeathMessages/releases/download/v0.13.0/DeathMessages-windows-x64.zip",
     "dependencies": {
-        "github.com/GroupMountain/GMLIB": ">=0.12.6"
+        "github.com/GroupMountain/GMLIB": ">=0.13.0"
     },
     "files": {
         "place": [
