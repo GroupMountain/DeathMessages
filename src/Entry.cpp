@@ -59,8 +59,7 @@ void Entry::loadI18n() {
 
 void Entry::loadResourcePack() {
     gmlib::tools::VanillaFix::setFixI18nEnabled();
-    std::string resourcePath = "./plugins/DeathMessages/resource/";
-    auto        resource     = gmlib::i18n::ResourceI18n(resourcePath, MOD_NAME, 0, 8, 0);
+    auto resource = gmlib::i18n::ResourceI18n(getSelf().getModDir() / u8"resource", MOD_NAME, 0, 8, 0);
     resource.addLanguage("en_US", en_US);
     resource.addLanguage("zh_CN", zh_CN);
 }

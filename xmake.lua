@@ -66,6 +66,7 @@ target("DeathMessages") -- Change this to your mod name.
     set_exceptions("none") -- To avoid conflicts with /EHa
     set_kind("shared")
     set_languages("cxx23")
+    set_symbols("debug")
 
     after_build(function (target)
         local mod_packer = import("scripts.after_build")
