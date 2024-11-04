@@ -2,7 +2,7 @@
 #include "Global.h"
 #include "Language.h"
 
-ll::Logger logger(PLUGIN_NAME);
+ll::Logger logger(MOD_NAME);
 ll::Logger deathLogger("Death");
 ll::Logger infoLogger("Server");
 
@@ -47,7 +47,7 @@ bool Entry::unload() {
 
 Config& Entry::getConfig() { return mConfig.value(); }
 
-std::optional<LangI18n> Entry::getI18n() { return mI18n; }
+std::optional<gmlib::i18n::LangI18n> Entry::getI18n() { return mI18n; }
 
 void Entry::loadI18n() {
     mI18n.emplace(getSelf().getLangDir(), getConfig().ServerSideTranslation.Language);
@@ -58,21 +58,20 @@ void Entry::loadI18n() {
 }
 
 void Entry::loadResourcePack() {
-    GMLIB::Mod::VanillaFix::setFixI18nEnabled();
+    gmlib::tools::VanillaFix::setFixI18nEnabled();
     std::string resourcePath = "./plugins/DeathMessages/resource/";
-    auto        resource     = GMLIB::Files::ResourceLanguage::ResourceLanguage(resourcePath, PLUGIN_NAME, 0, 8, 0);
+    auto        resource     = gmlib::i18n::ResourceI18n(resourcePath, MOD_NAME, 0, 8, 0);
     resource.addLanguage("en_US", en_US);
     resource.addLanguage("zh_CN", zh_CN);
-    resource.initLanguage();
 }
 
 } // namespace DeathMessages
 
-LL_REGISTER_PLUGIN(DeathMessages::Entry, DeathMessages::Entry::getInstance());
+LL_REGISTER_MOD(DeathMessages::Entry, DeathMessages::Entry::getInstance());
 
 std::string tr(std::string const& key, std::vector<std::string> const& params) {
     if (auto i18n = DeathMessages::Entry::getInstance()->getI18n()) {
         return i18n->get(key, params);
     }
-    return I18nAPI::get(key, params);
+    return gmlib::world::I18nAPI::get(key, params);
 }
