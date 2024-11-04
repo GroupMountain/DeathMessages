@@ -1,7 +1,7 @@
 #pragma once
-#include <include_all.h>
+#include <headers/include_all.h>
 
-#define PLUGIN_NAME "DeathMessages"
+#define MOD_NAME "DeathMessages"
 
 extern ll::Logger logger;
 extern ll::Logger deathLogger;
@@ -11,4 +11,3 @@ extern std::string tr(std::string const& key, std::vector<std::string> const& da
 
 extern void RegisterDamageDefinition();
 extern void ListenEvents();
-extern void initPlugin();
