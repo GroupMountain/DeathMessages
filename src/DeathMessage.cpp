@@ -12,7 +12,8 @@
 #include "mc/world/actor/ActorDamageByChildActorSource.h"
 #include "ll/api/service/Bedrock.h"
 #include "mc/world/level/Level.h"
-
+#include "mc/world/actor/monster/EnderCrystal.h"
+#include "mc/world/actor/ActorHurtResult.h"
 
 #include "mc/world/actor/Actor.h"
 phmap::flat_hash_map<int64, float>            mFallHeightMap;
@@ -176,7 +177,7 @@ DeathMessageResult makeDeathMessage(
             }
             auto weaponname = killer->getCarriedItem().getCustomName();
             if (!weaponname.empty()) {
-                weaponname = "[" + weaponname + "§r]";
+                weaponname = "[§b§o" + weaponname + "§r]";
                 res.second.push_back(weaponname);
             } else {
                 ll::utils::string_utils::replaceAll(res.first, ".item", "");
@@ -326,6 +327,30 @@ DeathMessageResult translateDeathMessage(DeathMessageResult origin, std::string 
     }
     return makeDeathMessage((int)damageCause, origin, name, killer, weaponName, isEscaping);
 }
+
+LL_AUTO_TYPE_INSTANCE_HOOK(
+    CryatslHurtHook,
+    HookPriority::Normal,
+    EnderCrystal,
+    &EnderCrystal::$_hurt,
+    ::ActorHurtResult,
+    ActorDamageSource const& a1,
+    float              a2,
+    bool               a3,
+    bool               a4
+) {
+    auto res  = origin(a1, a2, a3, a4);
+    isCrystal = true;
+    auto& executor = ll::thread::ThreadPoolExecutor::getDefault();
+    auto callback = executor.executeAfter(
+        [] {
+            isCrystal = false;
+        },
+        ll::chrono::game::ticks(1)
+    );
+    return res;
+}
+
 
 LL_AUTO_TYPE_INSTANCE_HOOK(
     DeathMessageHook1,
