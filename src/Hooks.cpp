@@ -1,19 +1,22 @@
 #include "Entry.h"
+#include "Hooks.h"
+#include "Global.h"
+
 #include "ll/api/memory/Hook.h"
 #include "ll/api/chrono/GameChrono.h"
 #include "ll/api/thread/ThreadPoolExecutor.h"
-#include <chrono>
+
 #include "mc/world/actor/Mob.h"
+#include "mc/world/actor/monster/EnderCrystal.h"
 #include "mc/world/actor/ActorDamageSource.h"
 #include "mc/world/actor/ActorDamageByActorSource.h"
 #include "mc/world/actor/ActorDamageByBlockSource.h"
 #include "mc/world/actor/ActorDamageByChildActorSource.h"
-#include "mc/world/actor/monster/EnderCrystal.h"
 #include "mc/world/actor/ActorHurtResult.h"
-#include "Global.h"
 #include "mc/world/actor/Actor.h"
 
-#include "Hooks.h"
+#include <chrono>
+
 
 
 
@@ -29,17 +32,11 @@ LL_AUTO_TYPE_INSTANCE_HOOK(
 
     if (ads.mCause == SharedTypes::Legacy::ActorDamageCause::Fall) {
         mFallHeightMap[uid.rawID] = getFallDistance();
-        logger->info("跌落高度为 {}", getFallDistance());
     }
     if (hasCategory(ActorCategory::Player) || isTame()) {
         if (mLastHurtByMobTime != 0) {
             auto hm = getLastHurtByMob();
             mHurtByEntityMap[uid.rawID] = hm->getOrCreateUniqueID();
-            if (!getLastHurtByMob()->getNameTag().empty()) logger->info("伤害来源为 {}", getLastHurtByMob()->getNameTag());
-            logger->info("伤害来源为 {}", getLastHurtByMob()->getTypeName());
-
-
-            if (!getLastHurtByMob()->getCarriedItem().getCustomName().empty()) logger->info("伤害来源为 {}", getLastHurtByMob()->getCarriedItem().getCustomName());
         }
     }
     origin(ads);
@@ -94,8 +91,6 @@ LL_AUTO_TYPE_INSTANCE_HOOK(
 
 
     auto originl = origin(a1, a2);
-    logger->info("原消息name为 {}", a1);
-    logger->info("原消息为 {}", originl.first);
     auto res     = translateDeathMessage(originl, a1, a2, this);
     return res;
 }
@@ -110,8 +105,6 @@ LL_AUTO_TYPE_INSTANCE_HOOK(
     Actor*      a2
 ) {
     auto originl = origin(a1, a2);
-    logger->info("原消息name为 {}", a1);
-    logger->info("原消息为 {}", originl.first);
     auto res     = translateDeathMessage(originl, a1, a2, this);
     return res;
 }
@@ -127,8 +120,6 @@ LL_AUTO_TYPE_INSTANCE_HOOK(
     Actor*      a2
 ) {
     auto originl = origin(a1, a2);
-    logger->info("原消息name为 {}", a1);
-    logger->info("原消息为 {}", originl.first);
     auto res     = translateDeathMessage(originl, a1, a2, this);
     return res;
 }
@@ -145,8 +136,6 @@ LL_AUTO_TYPE_INSTANCE_HOOK(
     Actor*      a2
 ) {
     auto originl = origin(a1, a2);
-    logger->info("原消息name为 {}", a1);
-    logger->info("原消息为 {}", originl.first);
     auto res     = translateDeathMessage(originl, a1, a2, this);
     return res;
 }

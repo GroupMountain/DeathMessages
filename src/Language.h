@@ -250,7 +250,7 @@ entity.breeze.name=Breeze
 entity.creaking.name=Creaking
 multiplayer.player.joined=%s joined the game
 multiplayer.player.left=%s left the game
-plugin.deathmessages.modapi.warn=The plugin ModAPI is not loaded, so client-side translation is unavailable. Only server-side translation can be used.
+plugin.deathmessages.modapi.warn=The optional Dependency plugin ModAPI is not loaded, so client-side translation is unavailable. Only server-side translation can be used.
 )";
 
 std::string zh_CN = R"(
@@ -504,5 +504,5 @@ entity.breeze.name=旋风人
 entity.creaking.name=嘎枝
 multiplayer.player.joined=%s 加入了游戏
 multiplayer.player.left=%s 退出了游戏
-plugin.deathmessages.modapi.warn=插件ModAPI没有被加载，所以客户端侧翻译无法使用，正在启用服务端侧翻译
+plugin.deathmessages.modapi.warn=可选依赖ModAPI没有被加载，所以客户端侧翻译无法使用，正在启用服务端侧翻译
 )";

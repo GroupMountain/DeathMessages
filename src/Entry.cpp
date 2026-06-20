@@ -1,24 +1,29 @@
 #include "Entry.h"
 #include "Global.h"
 #include "Language.h"
-#include "ll/api/mod/Mod.h"
+
 #include "ll/api/Config.h"
+#include "ll/api/data/IndirectValue.h"
 #include "ll/api/io/PatternFormatter.h"
 #include "ll/api/io/Logger.h"
 #include "ll/api/io/LoggerRegistry.h"
 #include "ll/api/io/FileSink.h"
+#include "ll/api/mod/Mod.h"
+#include "ll/api/mod/ModManagerRegistry.h"
 #include "ll/api/mod/RegisterHelper.h"
-#include "ll/api/data/IndirectValue.h"
+#include "ll/api/service/Bedrock.h"
+
 #include "gmlib/gm/i18n/LangI18n.h"
 #include "gmlib/gm/i18n/ResourceI18n.h"
-#include "ll/api/mod/ModManagerRegistry.h"
-#include <ll/api/service/Bedrock.h>
 
 ll::io::LoggerRegistry&         loggerRegistry = ll::io::LoggerRegistry::getInstance();
 std::shared_ptr<ll::io::Logger> logger         = loggerRegistry.getOrCreate(MOD_NAME);
 std::shared_ptr<ll::io::Logger> deathLogger    = loggerRegistry.getOrCreate("Death");
 std::shared_ptr<ll::io::Logger> infoLogger     = loggerRegistry.getOrCreate("Server");
-
+extern void uninstallHooks();
+extern void RegisterDamageDefinition();
+extern void uninstallEventListeners();
+extern void ListenEvents();
 
 namespace DeathMessages {
 
@@ -63,6 +68,9 @@ bool Entry::unload() {
     mConfig.reset();
     mI18n.reset();
     uninstallHooks();
+    loggerRegistry.erase(MOD_NAME);
+    loggerRegistry.erase("Death");
+    loggerRegistry.erase("Server");
     // getInstance().reset();
     return true;
 }

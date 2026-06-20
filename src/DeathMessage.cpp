@@ -1,42 +1,29 @@
 #include "Entry.h"
-#include "ll/api/memory/Hook.h"
+
 #include "ll/api/chrono/GameChrono.h"
-#include "mc/world/actor/Mob.h"
+#include "ll/api/memory/Hook.h"
+#include "ll/api/service/Bedrock.h"
+
 #include "mc/world/actor/ActorDamageSource.h"
 #include "mc/world/actor/ActorDamageByActorSource.h"
-
-#include "ll/api/service/Bedrock.h"
+#include "mc/world/actor/Actor.h"
+#include "mc/world/actor/Mob.h"
 #include "mc/world/level/Level.h"
 
+//===============GMLIB 0.13.5 ActorDamageCause.cc===============
 
-#include "mc/world/actor/Actor.h"
 phmap::flat_hash_map<int64, float>            mFallHeightMap;
 phmap::flat_hash_map<int64, ActorUniqueID>  mHurtByEntityMap;
-std::vector<std::pair<std::string, int>>    mCustomCauseMap;
 phmap::flat_hash_map<int, std::string_view> mVanillaCauseMessage;
-
 phmap::flat_hash_map<SharedTypes::Legacy::ActorDamageCause, phmap::flat_hash_map<std::string_view, std::string_view>> mHardCodedDeathMessage;
 bool isCrystal = false;
 
 std::string getCause(SharedTypes::Legacy::ActorDamageCause cause) {
     auto id = (int)cause;
-    for (auto& key : mCustomCauseMap) {
-        if (key.second == id) {
-            for (auto& key1 : mCustomCauseMap) {
-                if ((SharedTypes::Legacy::ActorDamageCause)key1.second == cause) {
-                    return key1.first;
-                }
-            }
-            return "none";
-        }
-    }
-    if (mVanillaCauseMessage.count(id)) {
+    if (mVanillaCauseMessage.count(id))
         return std::string(mVanillaCauseMessage[id]);
-    }
     return "";
 }
-
-
 
 Actor* getDamagingEntity(ActorDamageSource* ads) {
     auto id = ads->getDamagingEntityUniqueID();
@@ -45,9 +32,8 @@ Actor* getDamagingEntity(ActorDamageSource* ads) {
 
 // %entity.warden.name
 std::string getResourcePackKey(std::string const& name, Actor* ac) {
-    if (ac->hasCategory(ActorCategory::Player)) {
+    if (ac->hasCategory(ActorCategory::Player))
         return name;
-    }
     auto type = ac->getTypeName();
     ll::utils::string_utils::replaceAll(type, "minecraft:", "");
     std::string res = "%entity." + type + ".name";
@@ -68,16 +54,16 @@ DeathMessageResult makeDeathMessage(
     if (cause >= 35||mVanillaCauseMessage.count(cause) || isHardCodedMessage) {
         std::string msg = "death.attack.damageCause.item";
         ll::utils::string_utils::replaceAll(msg, "damageCause", getCause(SharedTypes::Legacy::ActorDamageCause(cause)));
-        if (isHardCodedMessage) {
+        if (isHardCodedMessage)
             msg = deathMessage.first;
-        }
+
         // 没有武器名不使用.item结尾
         if (weaponName.empty()) {
             // 试图逃离 xx 使用.player
             if (killer) {
-                if (isEscaping) {
+                if (isEscaping)
                     ll::utils::string_utils::replaceAll(msg, ".item", ".player");
-                }
+
             } else {
                 ll::utils::string_utils::replaceAll(msg, ".item", "");
             }
@@ -268,6 +254,9 @@ bool registerCustomDeathMessage(
     mHardCodedDeathMessage[cause][killerType] = message;
     return true;
 }
+//===============Copy finish===============
+
+
 void RegisterDamageDefinition() {
     setVanillaCauseMessage(SharedTypes::Legacy::ActorDamageCause::Anvil, "anvil");
     setVanillaCauseMessage(SharedTypes::Legacy::ActorDamageCause::EntityAttack, "mob");

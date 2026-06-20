@@ -1,8 +1,8 @@
 #pragma once
 #include "Config.h"
 #include "Global.h"
-#include "ll/api/mod/Mod.h"
 
+#include "ll/api/mod/Mod.h"
 #include <ll/api/mod/NativeMod.h>
 
 #include <gmlib/gm/i18n/LangI18n.h>
