@@ -1,6 +1,16 @@
 #include "Entry.h"
 #include "Global.h"
 #include "Language.h"
+#include "ll/api/mod/Mod.h"
+#include "ll/api/Config.h"
+#include "ll/api/io/PatternFormatter.h"
+#include "ll/api/io/Logger.h"
+#include "ll/api/io/LoggerRegistry.h"
+#include "ll/api/io/FileSink.h"
+#include "ll/api/mod/RegisterHelper.h"
+#include "ll/api/data/IndirectValue.h"
+#include "gmlib/gm/i18n/LangI18n.h"
+#include "gmlib/gm/i18n/ResourceI18n.h"
 
 ll::io::LoggerRegistry&         loggerRegistry = ll::io::LoggerRegistry::getInstance();
 std::shared_ptr<ll::io::Logger> logger         = loggerRegistry.getOrCreate(MOD_NAME);
@@ -35,8 +45,8 @@ bool Entry::load() {
 }
 
 bool Entry::enable() {
-    RegisterDamageDefinition();
-    ListenEvents();
+    /*    RegisterDamageDefinition();
+        ListenEvents();*/
     return true;
 }
 
@@ -51,10 +61,10 @@ bool Entry::unload() {
 
 Config& Entry::getConfig() { return mConfig.value(); }
 
-std::optional<GMLIB::Files::I18n::LangI18n> Entry::getI18n() { return mI18n; }
+std::unique_ptr<gmlib::i18n::LangI18n> Entry::getI18n() { return std::move(mI18n); }
 
 void Entry::loadI18n() {
-    mI18n.emplace(getSelf().getLangDir(), getConfig().ServerSideTranslation.Language);
+    mI18n= std::make_unique<gmlib::i18n::LangI18n>(getSelf().getLangDir(), getConfig().ServerSideTranslation.Language);
     mI18n->updateOrCreateLanguage("en_US", en_US);
     mI18n->updateOrCreateLanguage("zh_CN", zh_CN);
     mI18n->loadAllLanguages();
@@ -62,8 +72,7 @@ void Entry::loadI18n() {
 }
 
 void Entry::loadResourcePack() {
-    GMLIB::Mod::VanillaFix::setFixI18nEnabled();
-    auto resource = GMLIB::Files::ResourceLanguage(getSelf().getModDir() / u8"resource", MOD_NAME, 0, 8, 0);
+    auto resource = gmlib::i18n::ResourceI18n(getSelf().getModDir() / u8"resource", MOD_NAME, 0, 8, 0);
     resource.addLanguage("en_US", en_US);
     resource.addLanguage("zh_CN", zh_CN);
 }
@@ -72,9 +81,13 @@ void Entry::loadResourcePack() {
 
 LL_REGISTER_MOD(DeathMessages::Entry, DeathMessages::Entry::getInstance());
 
-std::string tr(std::string const& key, std::vector<std::string> const& params) {
+/*std::string tr(std::string const& key, std::vector<std::string> const& params) {
     if (auto i18n = DeathMessages::Entry::getInstance().getI18n()) {
         return i18n->get(key, params);
     }
-    return ::I18nAPI::get(key, params);
-}
+    auto i18n = DeathMessages::Entry::getI18n();
+
+        return i18n->get(key, params);
+
+
+}*/

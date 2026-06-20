@@ -1,6 +1,11 @@
 #pragma once
 #include "Config.h"
 #include "Global.h"
+#include "ll/api/mod/Mod.h"
+
+#include <ll/api/mod/NativeMod.h>
+
+#include <gmlib/gm/i18n/LangI18n.h>
 
 namespace DeathMessages {
 
@@ -27,7 +32,7 @@ public:
 
     Config& getConfig();
 
-    std::optional<GMLIB::Files::I18n::LangI18n> getI18n();
+    std::unique_ptr<gmlib::i18n::LangI18n> getI18n();
 
     void loadI18n();
 
@@ -36,7 +41,7 @@ public:
 private:
     ll::mod::NativeMod&                         mSelf;
     std::optional<Config>                       mConfig;
-    std::optional<GMLIB::Files::I18n::LangI18n> mI18n;
+    std::unique_ptr<gmlib::i18n::LangI18n> mI18n;
 };
 
 } // namespace DeathMessages
