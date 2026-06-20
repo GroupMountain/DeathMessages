@@ -1,26 +1,43 @@
 {
-    "format_version": 2,
+    "format_version": 3,
+    "format_uuid": "289f771f-2c9a-4d73-9f3f-8492495a924d",
     "tooth": "github.com/GroupMountain/DeathMessages",
-    "version": "0.13.1",
+    "version": "0.14.0",
     "info": {
         "name": "DeathMessages",
         "description": "Better Death Messages on MCBE",
         "author": "GroupMountain",
+        "source": "github.com/GroupMountain/DeathMessages",
         "tags": [
-            "LeviLamina",
-            "DeathMessages"
+            "platform:levilamina",
+            "type:mod",
+            "DeathMessage",
+            "gmlib"
         ]
     },
-    "asset_url": "https://github.com/GroupMountain/DeathMessages/releases/download/v0.13.1/DeathMessages-windows-x64.zip",
-    "dependencies": {
-        "github.com/GroupMountain/GMLIB": ">=0.13.10"
-    },
-    "files": {
-        "place": [
-            {
-                "src": "DeathMessages/*",
-                "dest": "plugins/DeathMessages"
-            }
-        ]
-    }
+
+    "variants": [
+        {
+            "platform": "win-x64",
+            "dependencies": {
+                "github.com/GroupMountain/GMLIB-Release": ">=26.10.0"
+            },
+            "assets": [
+                {
+                    "type": "self",
+                    "urls": [],
+                    "placements": [
+                        {
+                            "type": "dir",
+                            "src": "DeathMessages/*",
+                            "dest": "plugins/DeathMessages"
+                        }
+                    ]
+                }
+            ],
+            "remove_files": [
+                "plugins/DeathMessages"
+            ]
+        }
+    ]
 }

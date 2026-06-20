@@ -2,7 +2,7 @@
     "name": "${modName}",
     "entry": "${modFile}",
     "type": "native",
-    "version": "0.13.1",
+    "version": "0.14.0W",
     "author": "GroupMountain",
     "description": "Better Death Messages",
     "dependencies": [
