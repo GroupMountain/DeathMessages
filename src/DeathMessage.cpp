@@ -1,120 +1,34 @@
 #include "Entry.h"
-#include "ll/api/event/player/PlayerConnectEvent.h"
-#include "ll/api/event/player/PlayerDisconnectEvent.h"
 #include "ll/api/memory/Hook.h"
 #include "ll/api/chrono/GameChrono.h"
-#include "ll/api/thread/ThreadPoolExecutor.h"
-#include <chrono>
 #include "mc/world/actor/Mob.h"
 #include "mc/world/actor/ActorDamageSource.h"
 #include "mc/world/actor/ActorDamageByActorSource.h"
-#include "mc/world/actor/ActorDamageByBlockSource.h"
-#include "mc/world/actor/ActorDamageByChildActorSource.h"
+
 #include "ll/api/service/Bedrock.h"
 #include "mc/world/level/Level.h"
-#include "mc/world/actor/monster/EnderCrystal.h"
-#include "mc/world/actor/ActorHurtResult.h"
+
 
 #include "mc/world/actor/Actor.h"
 phmap::flat_hash_map<int64, float>            mFallHeightMap;
 phmap::flat_hash_map<int64, ActorUniqueID>  mHurtByEntityMap;
-
-LL_AUTO_TYPE_INSTANCE_HOOK(
-    MobDieHook,
-    HookPriority::Normal,
-    Mob,
-    &Mob::$die,
-    void,
-    ActorDamageSource const& ads
-) {
-    auto uid = getOrCreateUniqueID();
-
-    if (ads.mCause == SharedTypes::Legacy::ActorDamageCause::Fall) {
-        mFallHeightMap[uid.rawID] = getFallDistance();
-        logger->info("跌落高度为 {}", getFallDistance());
-    }
-    if (hasCategory(ActorCategory::Player) || isTame()) {
-        if (mLastHurtByMobTime != 0) {
-            auto hm = getLastHurtByMob();
-            mHurtByEntityMap[uid.rawID] = hm->getOrCreateUniqueID();
-            if (!getLastHurtByMob()->getNameTag().empty()) logger->info("伤害来源为 {}", getLastHurtByMob()->getNameTag());
-            logger->info("伤害来源为 {}", getLastHurtByMob()->getTypeName());
-
-
-            if (!getLastHurtByMob()->getCarriedItem().getCustomName().empty()) logger->info("伤害来源为 {}", getLastHurtByMob()->getCarriedItem().getCustomName());
-        }
-    }
-    origin(ads);
-
-    auto& executor = ll::thread::ThreadPoolExecutor::getDefault();
-    auto callback = executor.executeAfter(
-        [] {
-            mHurtByEntityMap.clear();
-            mFallHeightMap.clear();
-        },
-        ll::chrono::game::ticks(1)
-    );
-}
-using DeathMessageResult = std::pair<std::string, std::vector<std::string>>;
-
-int                                         mMaxCauseId = 34;
 std::vector<std::pair<std::string, int>>    mCustomCauseMap;
 phmap::flat_hash_map<int, std::string_view> mVanillaCauseMessage;
 
 phmap::flat_hash_map<SharedTypes::Legacy::ActorDamageCause, phmap::flat_hash_map<std::string_view, std::string_view>> mHardCodedDeathMessage;
-
 bool isCrystal = false;
-
-bool isCustomDefinition(int cause) {
-    if (cause >= 35) {
-        return true;
-    }
-    if (mVanillaCauseMessage.count(cause)) {
-        return true;
-    }
-    return false;
-}
-
-bool isCustomCauseExist(std::string const& causeName) {
-    for (auto& key : mCustomCauseMap) {
-        if (key.first == causeName) {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool isCustomCauseExist(int cause) {
-    for (auto& key : mCustomCauseMap) {
-        if (key.second == cause) {
-            return true;
-        }
-    }
-    return false;
-}
-
-SharedTypes::Legacy::ActorDamageCause getCustomCause(std::string const& causeName) {
-    for (auto& key : mCustomCauseMap) {
-        if (key.first == causeName) {
-            return (SharedTypes::Legacy::ActorDamageCause)key.second;
-        }
-    }
-    return SharedTypes::Legacy::ActorDamageCause::None;
-}
-
-std::string getCustomCause(SharedTypes::Legacy::ActorDamageCause cause) {
-    for (auto& key : mCustomCauseMap) {
-        if ((SharedTypes::Legacy::ActorDamageCause)key.second == cause) {
-            return key.first;
-        }
-    }
-    return "none";
-}
 
 std::string getCause(SharedTypes::Legacy::ActorDamageCause cause) {
     auto id = (int)cause;
-    if (isCustomCauseExist(id)) {
-        return getCustomCause(cause);
+    for (auto& key : mCustomCauseMap) {
+        if (key.second == id) {
+            for (auto& key1 : mCustomCauseMap) {
+                if ((SharedTypes::Legacy::ActorDamageCause)key1.second == cause) {
+                    return key1.first;
+                }
+            }
+            return "none";
+        }
     }
     if (mVanillaCauseMessage.count(id)) {
         return std::string(mVanillaCauseMessage[id]);
@@ -151,7 +65,7 @@ DeathMessageResult makeDeathMessage(
     bool           isHardCodedMessage = false
 ) {
     // 自定义类型构造
-    if (isCustomDefinition(cause) || isHardCodedMessage) {
+    if (cause >= 35||mVanillaCauseMessage.count(cause) || isHardCodedMessage) {
         std::string msg = "death.attack.damageCause.item";
         ll::utils::string_utils::replaceAll(msg, "damageCause", getCause(SharedTypes::Legacy::ActorDamageCause(cause)));
         if (isHardCodedMessage) {
@@ -185,6 +99,10 @@ DeathMessageResult makeDeathMessage(
         } else {
             // 如果没有击杀者和试图逃离，那么不可能使用 .player 结尾
             ll::utils::string_utils::replaceAll(res.first, ".player", "");
+        }
+        if (!DeathMessages::Entry::getInstance().isResourceI18nLoaded) {
+            res.first=tr(res.first, res.second);
+            res.second = {};
         }
         return res;
     }
@@ -328,116 +246,6 @@ DeathMessageResult translateDeathMessage(DeathMessageResult origin, std::string 
     return makeDeathMessage((int)damageCause, origin, name, killer, weaponName, isEscaping);
 }
 
-LL_AUTO_TYPE_INSTANCE_HOOK(
-    CryatslHurtHook,
-    HookPriority::Normal,
-    EnderCrystal,
-    &EnderCrystal::$_hurt,
-    ::ActorHurtResult,
-    ActorDamageSource const& a1,
-    float              a2,
-    bool               a3,
-    bool               a4
-) {
-    auto res  = origin(a1, a2, a3, a4);
-    isCrystal = true;
-    auto& executor = ll::thread::ThreadPoolExecutor::getDefault();
-    auto callback = executor.executeAfter(
-        [] {
-            isCrystal = false;
-        },
-        ll::chrono::game::ticks(1)
-    );
-    return res;
-}
-
-
-LL_AUTO_TYPE_INSTANCE_HOOK(
-    DeathMessageHook1,
-    HookPriority::Lowest,
-    ActorDamageSource,
-    &ActorDamageSource::$getDeathMessage,
-
-
-    DeathMessageResult,
-
-    std::string a1,
-    Actor*      a2
-) {
-
-
-
-    auto originl = origin(a1, a2);
-    logger->info("原消息name为 {}", a1);
-    logger->info("原消息为 {}", originl.first);
-    auto res     = translateDeathMessage(originl, a1, a2, this);
-    return res;
-}
-
-LL_AUTO_TYPE_INSTANCE_HOOK(
-    DeathMessageHook2,
-    HookPriority::Lowest,
-    ActorDamageByActorSource,
-    &ActorDamageByActorSource::$getDeathMessage,
-    DeathMessageResult,
-    std::string a1,
-    Actor*      a2
-) {
-    auto originl = origin(a1, a2);
-    logger->info("原消息name为 {}", a1);
-    logger->info("原消息为 {}", originl.first);
-    auto res     = translateDeathMessage(originl, a1, a2, this);
-    return res;
-}
-
-LL_AUTO_TYPE_INSTANCE_HOOK(
-    DeathMessageHook3,
-    HookPriority::Lowest,
-    ActorDamageByBlockSource,
-    &ActorDamageByBlockSource::$getDeathMessage,
-
-    DeathMessageResult,
-    std::string a1,
-    Actor*      a2
-) {
-    auto originl = origin(a1, a2);
-    logger->info("原消息name为 {}", a1);
-    logger->info("原消息为 {}", originl.first);
-    auto res     = translateDeathMessage(originl, a1, a2, this);
-    return res;
-}
-
-LL_AUTO_TYPE_INSTANCE_HOOK(
-    DeathMessageHook4,
-    HookPriority::Lowest,
-    ActorDamageByChildActorSource,
-    &ActorDamageByChildActorSource::$getDeathMessage,
-
-
-    DeathMessageResult,
-    std::string a1,
-    Actor*      a2
-) {
-    auto originl = origin(a1, a2);
-    logger->info("原消息name为 {}", a1);
-    logger->info("原消息为 {}", originl.first);
-    auto res     = translateDeathMessage(originl, a1, a2, this);
-    return res;
-}
-int getNextCauseId() {
-    mMaxCauseId++;
-    return mMaxCauseId;
-}
-
-bool registerDamageCause(std::string const& causeName) {
-    if (!isCustomCauseExist(causeName)) {
-        auto id = getNextCauseId();
-        mCustomCauseMap.push_back({causeName, id});
-        return true;
-    }
-    return false;
-}
-
 bool setVanillaCauseMessage(SharedTypes::Legacy::ActorDamageCause cause, std::string_view msg) {
     auto id = (int)cause;
     if (!mVanillaCauseMessage.count(id)) {
@@ -566,33 +374,3 @@ void RegisterDamageDefinition() {
         "death.attack.player.item"
     );
 }
-/*
-void ListenEvents() {
-    auto& config   = DeathMessages::Entry::getInstance().getConfig();
-    auto& eventBus = ll::event::EventBus::getInstance();
-    if (config.ConsoleLog.JoinMessage) {
-        eventBus.emplaceListener<ll::event::player::PlayerConnectEvent>([](ll::event::player::PlayerConnectEvent& ev) {
-            infoLogger->info(fmt::format(fg(fmt::color::yellow), tr("multiplayer.player.joined", {ev.self().getRealName()}))
-            );
-        });
-    }
-    if (config.ConsoleLog.LeftMessage) {
-        eventBus.emplaceListener<ll::event::player::PlayerDisconnectEvent>(
-            [](ll::event::player::PlayerDisconnectEvent& ev) {
-                infoLogger->info(
-                    fmt::format(fg(fmt::color::yellow), tr("multiplayer.player.left", {ev.self().getRealName()}))
-                );
-            }
-        );
-    }
-    if (config.ConsoleLog.DeathMessage) {
-        eventBus.emplaceListener<GMLIB::Event::EntityEvent::DeathMessageAfterEvent>(
-            [](GMLIB::Event::EntityEvent::DeathMessageAfterEvent& ev) {
-                auto msg  = ev.getDeathMessage();
-                auto info = tr(msg.first, msg.second);
-                deathLogger->info(info);
-                ev.getDeathMessage() = {info, msg.second};
-            }
-        );
-    }
-}*/
