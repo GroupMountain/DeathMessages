@@ -79,16 +79,10 @@ LL_AUTO_TYPE_INSTANCE_HOOK(
     HookPriority::Lowest,
     ActorDamageSource,
     &ActorDamageSource::$getDeathMessage,
-
-
     DeathMessageResult,
-
     std::string a1,
     Actor*      a2
 ) {
-
-
-
     auto originl = origin(a1, a2);
     auto res     = translateDeathMessage(originl, a1, a2, this);
     return res;
@@ -113,7 +107,6 @@ LL_AUTO_TYPE_INSTANCE_HOOK(
     HookPriority::Lowest,
     ActorDamageByBlockSource,
     &ActorDamageByBlockSource::$getDeathMessage,
-
     DeathMessageResult,
     std::string a1,
     Actor*      a2
@@ -128,8 +121,6 @@ LL_AUTO_TYPE_INSTANCE_HOOK(
     HookPriority::Lowest,
     ActorDamageByChildActorSource,
     &ActorDamageByChildActorSource::$getDeathMessage,
-
-
     DeathMessageResult,
     std::string a1,
     Actor*      a2
