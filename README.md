@@ -1,6 +1,22 @@
 # DeathMessages
 Better Death Messages on MCBE
 
+
+## Dependencies
+
+
+### Required Dependency
+
+ `GMLIB`
+
+
+### Optional Dependency
+
+ `ModAPI`
+
+Loading *ModAPI* enables client-side translation.
+That allows players to freely switch languages on their own.
+
 # 开源许可
 ## 源代码可用性
 - 您可以自由地获取、使用和修改本插件的源代码，无论是个人使用还是商业目的。
