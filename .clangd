@@ -1,15 +1,13 @@
 Diagnostics:
-  Suppress: 
+  Suppress:
     - "-Wmicrosoft-enum-forward-reference"
     - "-Wc++11-narrowing"
     - "-Wc++2b-extensions"
     - "-Wmicrosoft-cast"
 CompileFlags:
-  Add: 
+  Add:
     - "-ferror-limit=0"
-    - "-D__FUNCTION__=\"dummy\""
-    - "-Yumc/_HeaderOutputPredefine.h"
-    - "-FImc/_HeaderOutputPredefine.h" # clangd bug can't find pch file
-  Remove: 
-    - "/Yu_HeaderOutputPredefine.h"
-    - "/FI_HeaderOutputPredefine.h"
+    - '-D__FUNCTION__="dummy"'
+    - "-Dnsel_CONFIG_SELECT_EXPECTED=nsel_EXPECTED_NONSTD"
+    - "/std:c++20"
+    - "-D_HAS_CXX23=1"
