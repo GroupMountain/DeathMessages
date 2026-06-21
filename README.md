@@ -17,6 +17,24 @@ Better Death Messages on MCBE
 Loading *ModAPI* enables client-side translation.
 That allows players to freely switch languages on their own.
 
+## Death Messages Translation
+
+By default, this plugin uses resource packs for translation to ensure perfect compatibility with various addons. <br> `This requires ModAPI to be enabled.`
+<br>(The plugin automatically builds the resource pack and sends it to players upon joining. Using resource pack-based translation is recommended.)
+
+If you prefer not to use resource packs, you can enable server-side translation in the configuration file.<br> This way, all translations are handled entirely on the server without requiring any client-side resource packs.
+
+#### For issues, please report them via GitHub Issues!!!
+#### Pull Requests are also welcome!
+
+You can also customize death messages by editing the language files.<br>
+(The resource pack will be generated in the ./plugins/DeathMessages/log directory; feel free to modify it as needed.)
+<br> `This requires ModAPI to be enabled.`
+
+High performance: Implemented using native functions with no additional data storage, resulting in minimal performance overhead.
+Uses native death message broadcasting, preserving the vanilla showdeathmessages game rule behavior.
+Currently restores approximately 95% of Java Edition death messages.
+
 # 开源许可
 ## 源代码可用性
 - 您可以自由地获取、使用和修改本插件的源代码，无论是个人使用还是商业目的。
