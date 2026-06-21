@@ -92,7 +92,7 @@ void Entry::loadI18n() {
 
 
 void Entry::loadResourcePack() {
-    auto mResource = std::make_unique<gmlib::i18n::ResourceI18n>(getSelf().getModDir() / u8"lang", MOD_NAME, 0, 16, 0);
+    auto mResource = std::make_unique<gmlib::i18n::ResourceI18n>(getSelf().getModDir() / u8"lang", MOD_NAME, 0, 16, 1);
     mResource->addLanguage("en_US", en_US);
     mResource->addLanguage("zh_CN", zh_CN);
     mResource->loadAllLanguages();

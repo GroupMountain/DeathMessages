@@ -87,6 +87,8 @@ DeathMessageResult makeDeathMessage(
         }
         if (!DeathMessages::Entry::getInstance().isResourceI18nLoaded) {
             res.first=tr(res.first, res.second);
+            logger->info("原消息name为 {}", res.first);
+
             res.second = {};
         }
         return res;
@@ -131,7 +133,7 @@ DeathMessageResult tryTranslateHardCodedFallingDeathMessage(
     } else {
         deathMessage.first = "death.attack.generic";
     }
-    return makeDeathMessage((int)SharedTypes::Legacy::ActorDamageCause::Fall, deathMessage, name, killer, weaponName, isEscaping, true);
+    return makeDeathMessage((int)SharedTypes::Legacy::ActorDamageCause::Fall, deathMessage, name, killer, weaponName, false, true);
 }
 
 std::optional<DeathMessageResult> tryTranslateHardCodedDeathMessage(
