@@ -20,8 +20,8 @@ bool isCrystal = false;
 
 std::string getCause(SharedTypes::Legacy::ActorDamageCause cause) {
     auto id = (int)cause;
-    if (mVanillaCauseMessage.count(id))
-        return std::string(mVanillaCauseMessage[id]);
+    if (mVanillaCauseMessage.count(id)){return std::string(mVanillaCauseMessage[id]);}
+
     return "";
 }
 
@@ -32,8 +32,8 @@ Actor* getDamagingEntity(ActorDamageSource* ads) {
 
 // %entity.warden.name
 std::string getResourcePackKey(std::string const& name, Actor* ac) {
-    if (ac->hasCategory(ActorCategory::Player))
-        return name;
+    if (ac->hasCategory(ActorCategory::Player)){return name;}
+
     auto type = ac->getTypeName();
     ll::utils::string_utils::replaceAll(type, "minecraft:", "");
     std::string res = "%entity." + type + ".name";
@@ -54,15 +54,14 @@ DeathMessageResult makeDeathMessage(
     if (cause >= 35||mVanillaCauseMessage.count(cause) || isHardCodedMessage) {
         std::string msg = "death.attack.damageCause.item";
         ll::utils::string_utils::replaceAll(msg, "damageCause", getCause(SharedTypes::Legacy::ActorDamageCause(cause)));
-        if (isHardCodedMessage)
-            msg = deathMessage.first;
+        if (isHardCodedMessage) {
+        msg = deathMessage.first;}
 
         // 没有武器名不使用.item结尾
         if (weaponName.empty()) {
             // 试图逃离 xx 使用.player
             if (killer) {
-                if (isEscaping)
-                    ll::utils::string_utils::replaceAll(msg, ".item", ".player");
+                if (isEscaping){ll::utils::string_utils::replaceAll(msg, ".item", ".player");}
 
             } else {
                 ll::utils::string_utils::replaceAll(msg, ".item", "");
@@ -216,8 +215,11 @@ DeathMessageResult translateDeathMessage(DeathMessageResult origin, std::string 
             killer = getDamagingEntity(ads);
         }
     }
-    if (killer == nullptr && mHurtByEntityMap.count(uid)) {
+    if (mHurtByEntityMap.count(uid)) {
+        if (killer == nullptr) {
         killer     = ll::service::getLevel()->fetchEntity(mHurtByEntityMap[uid],true);
+
+        }
         isEscaping = true;
     }
     if (killer != nullptr) {
