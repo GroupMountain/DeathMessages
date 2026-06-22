@@ -19,17 +19,26 @@ That allows players to freely switch languages on their own.
 
 ## Death Messages Translation
 
-By default, this plugin uses resource packs for translation to ensure perfect compatibility with various addons. <br> `This requires ModAPI to be enabled.`
+### Resource Pack Translation
+By default, this plugin uses resource packs for translation to ensure perfect compatibility with various addons. <br> 
 <br>(The plugin automatically builds the resource pack and sends it to players upon joining. Using resource pack-based translation is recommended.)
+>[!IMPORTANT]
+>If you wnt to use Resource Pack Translation<br>
+>This requires ModAPI to be enabled.<br>
+>You can configure language for console in `server.properties` like `language=en_US`
+### Server-Side Translation
 
 If you prefer not to use resource packs, you can enable server-side translation in the configuration file.<br> This way, all translations are handled entirely on the server without requiring any client-side resource packs.
 
+>[!IMPORTANT]
+>You can configure language for Server-Side Translation in `./plugins/DeathMessages/config/config.json` like `Language=en_US`
 #### For issues, please report them via GitHub Issues!!!
 #### Pull Requests are also welcome!
 
 You can also customize death messages by editing the language files.<br>
-(The resource pack will be generated in the ./plugins/DeathMessages/log directory; feel free to modify it as needed.)
-<br> `This requires ModAPI to be enabled.`
+(The language files will be generated in the ./plugins/DeathMessages/lang directory; feel free to modify it as needed.)
+>[!WARNING]
+> DO NOT modify files in directory `./plugins/DeathMessages/resource`, unless you know what you are doing
 
 High performance: Implemented using native functions with no additional data storage, resulting in minimal performance overhead.
 Uses native death message broadcasting, preserving the vanilla showdeathmessages game rule behavior.

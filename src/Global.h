@@ -17,4 +17,4 @@ extern bool isCrystal;
 using DeathMessageResult = std::pair<std::string, std::vector<std::string>>;
 
 extern DeathMessageResult translateDeathMessage(DeathMessageResult origin, std::string name, Actor* dead, ActorDamageSource* ads);
-extern std::string tr(std::string const& key, std::vector<std::string> const& params = {});
+extern std::string tr(std::string const& key, std::vector<std::string> params = {});

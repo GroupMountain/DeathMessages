@@ -12,9 +12,12 @@
 #include "ll/api/mod/ModManagerRegistry.h"
 #include "ll/api/mod/RegisterHelper.h"
 #include "ll/api/service/Bedrock.h"
+#include "ll/api/io/FileUtils.h"
+#include <filesystem>
 
 #include "gmlib/gm/i18n/LangI18n.h"
 #include "gmlib/gm/i18n/ResourceI18n.h"
+#include "gmlib/mc/locale/I18nAPI.h"
 
 ll::io::LoggerRegistry&         loggerRegistry = ll::io::LoggerRegistry::getInstance();
 std::shared_ptr<ll::io::Logger> logger         = loggerRegistry.getOrCreate(MOD_NAME);
@@ -33,8 +36,13 @@ Entry& Entry::getInstance() {
 }
 
 bool Entry::load() {
-        isResourceI18nLoaded=false;
-
+    isResourceI18nLoaded=false;
+    if (!ll::file_utils::readFile(getSelf().getLangDir() / u8"en_US.lang").has_value()) {
+        ll::file_utils::writeFile(getSelf().getLangDir() / u8"en_US.lang", en_US);
+    }
+    if (!ll::file_utils::readFile(getSelf().getLangDir() / u8"zh_CN.lang").has_value()) {
+        ll::file_utils::writeFile(getSelf().getLangDir() / u8"zh_CN.lang", zh_CN);
+    }
     mConfig.emplace();
     if (!ll::config::loadConfig(*mConfig, getSelf().getConfigDir() / u8"config.json")) {
         ll::config::saveConfig(*mConfig, getSelf().getConfigDir() / u8"config.json");
@@ -46,9 +54,11 @@ bool Entry::load() {
             ll::makePolymorphic<ll::io::PatternFormatter>("[{3:.3%F %T.} {2}][{1}] {0}", false);
         deathLogger->addSink(std::make_shared<ll::io::FileSink>(path, polymorphicFormatter));
     }
-    loadI18n();
     if ((!getConfig().ServerSideTranslation.Enabled)&&ll::mod::ModManagerRegistry::getInstance().hasMod("ModAPI")) {
         loadResourcePack();
+    }else {
+        loadI18n();
+
     }
     return true;
 }
@@ -82,19 +92,38 @@ gmlib::i18n::LangI18n& Entry::getI18n() {
 }
 
 void Entry::loadI18n() {
+    const std::string custom_zh_CN = ll::file_utils::readFile(
+        getSelf().getLangDir() / u8"zh_CN.lang",
+        false
+        )
+    .value_or(zh_CN);
+    const std::string custom_en_US = ll::file_utils::readFile(
+        getSelf().getLangDir() / u8"en_US.lang",
+        false
+        )
+    .value_or(en_US);
+
     mI18n= std::make_unique<gmlib::i18n::LangI18n>(getSelf().getLangDir(), getConfig().ServerSideTranslation.Language);
-    mI18n->updateOrCreateLanguage("en_US", en_US);
-    mI18n->updateOrCreateLanguage("zh_CN", zh_CN);
+    mI18n->updateOrCreateLanguage("en_US", custom_en_US);
+    mI18n->updateOrCreateLanguage("zh_CN", custom_zh_CN);
     mI18n->loadAllLanguages();
-    mI18n->setDefaultLanguage("zh_CN");
+    mI18n->setDefaultLanguage(getConfig().ServerSideTranslation.Language);
 }
 
 
 
 void Entry::loadResourcePack() {
-    auto mResource = std::make_unique<gmlib::i18n::ResourceI18n>(getSelf().getModDir() / u8"lang", MOD_NAME, 0, 16, 1);
-    mResource->addLanguage("en_US", en_US);
-    mResource->addLanguage("zh_CN", zh_CN);
+    if (
+        ll::file_utils::readFile(getSelf().getLangDir() / u8"en_US.lang")!=
+        ll::file_utils::readFile(getSelf().getModDir() / u8"resource/language_pack/texts/en_US.lang")
+        ||ll::file_utils::readFile(getSelf().getLangDir() / u8"zh_CN.lang")!=
+        ll::file_utils::readFile(getSelf().getModDir() / u8"resource/language_pack/texts/zh_CN.lang")
+        )
+        std::filesystem::remove_all(getSelf().getModDir() / u8"resource");
+
+    auto mResource = std::make_unique<gmlib::i18n::ResourceI18n>(getSelf().getModDir() / u8"resource", MOD_NAME, 0, 16, 1);
+    mResource->addLanguageFromPath("zh_CN",getSelf().getLangDir() / u8"zh_CN.lang");
+    mResource->addLanguageFromPath("en_US",getSelf().getLangDir() / u8"en_US.lang");
     mResource->loadAllLanguages();
     isResourceI18nLoaded=true;
 }
@@ -107,11 +136,19 @@ void Entry::loadResourcePack() {
 
 LL_REGISTER_MOD(DeathMessages::Entry, DeathMessages::Entry::getInstance());
 
-std::string tr(std::string const& key, std::vector<std::string> const& params) {
+std::string tr(std::string const& key, std::vector<std::string> params) {
+    if (DeathMessages::Entry::getInstance().isResourceI18nLoaded) {
+        return gmlib::I18nAPI::get(key, params);
+    }
     auto& i18n = DeathMessages::Entry::getInstance().getI18n();
-        return i18n.get(key, params);
-
-
+    logger->info(DeathMessages::Entry::getInstance().isResourceI18nLoaded ? "ResourceI18nLoaded" : "LangI18nLoaded");
+    if (params.size() > 1)
+        params.at(1) = gmlib::I18nAPI::get(
+            params.at(1),
+            {},
+            DeathMessages::Entry::getInstance().getConfig().ServerSideTranslation.Language
+        );
+    return i18n.get(key, params);
     return key;
 }
 

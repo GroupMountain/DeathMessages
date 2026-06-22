@@ -87,8 +87,8 @@ LL_AUTO_TYPE_INSTANCE_HOOK(
     auto res     = translateDeathMessage(originl, a1, a2, this);
     return res;
 }
-
-LL_AUTO_TYPE_INSTANCE_HOOK(
+//
+/*LL_AUTO_TYPE_INSTANCE_HOOK(
     ActorDamageByActorHook,
     HookPriority::Lowest,
     ActorDamageByActorSource,
@@ -128,13 +128,13 @@ LL_AUTO_TYPE_INSTANCE_HOOK(
     auto originl = origin(a1, a2);
     auto res     = translateDeathMessage(originl, a1, a2, this);
     return res;
-}
+}*/
 
 void uninstallHooks() {
     MobDieHook::unhook();
     CryatslHurtHook::unhook();
     ActorDamageHook::unhook();
-    ActorDamageByActorHook::unhook();
+    /*ActorDamageByActorHook::unhook();
     ActorDamageByBlockHook::unhook();
-    ActorDamageByChildHook::unhook();
+    ActorDamageByChildHook::unhook();*/
 }

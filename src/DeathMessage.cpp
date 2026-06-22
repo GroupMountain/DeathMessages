@@ -10,6 +10,8 @@
 #include "mc/world/actor/Mob.h"
 #include "mc/world/level/Level.h"
 
+#include <gmlib/mc/locale/I18nAPI.h>
+
 //===============GMLIB 0.13.5 ActorDamageCause.cc===============
 
 phmap::flat_hash_map<int64, float>            mFallHeightMap;
@@ -83,10 +85,21 @@ DeathMessageResult makeDeathMessage(
             // 如果没有击杀者和试图逃离，那么不可能使用 .player 结尾
             ll::utils::string_utils::replaceAll(res.first, ".player", "");
         }
+
         if (!DeathMessages::Entry::getInstance().isResourceI18nLoaded) {
-            res.first=tr(res.first, res.second);
+            auto translatedMessage=tr(res.first, res.second);
+            res.first = translatedMessage;
             res.second = {};
+
+
         }
+        auto& config   = DeathMessages::Entry::getInstance().getConfig();
+
+        if (config.ConsoleLog.DeathMessage) {
+            auto translatedMessage=tr(res.first, res.second);
+            deathLogger->info(translatedMessage);
+        }
+
         return res;
     }
     // 未定义返回vanilla值

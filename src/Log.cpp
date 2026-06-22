@@ -8,7 +8,6 @@
 #include "ll/api/event/EventBus.h"
 
 ll::event::ListenerPtr playerConnectEventListener;
-ll::event::ListenerPtr playerDieEventListener;
 ll::event::ListenerPtr playerDisconnectEventListener;
 void ListenEvents() {
     auto& config   = DeathMessages::Entry::getInstance().getConfig();
@@ -30,20 +29,13 @@ void ListenEvents() {
             }
         );
     }
-    if (config.ConsoleLog.DeathMessage) {
-        playerDieEventListener=eventBus.emplaceListener<ll::event::player::PlayerDieEvent>(
-            [](ll::event::player::PlayerDieEvent& ev) {
-                auto [key, params]  = ev.source().getDeathMessage(ev.self().getRealName(), &ev.self());
-                auto info = tr(key, params);
-                deathLogger->info(info);
-            }
-        );
-    }
+
+    //Die Message move to DeathMessage.cpp 93L
+
 }
 
 void uninstallEventListeners() {
     auto& eventBus = ll::event::EventBus::getInstance();
-    eventBus.removeListener(playerDieEventListener);
     eventBus.removeListener(playerConnectEventListener);
     eventBus.removeListener(playerDisconnectEventListener);
 }
